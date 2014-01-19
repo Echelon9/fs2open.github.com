@@ -222,13 +222,21 @@ int ai_query_goal_valid( int ship, int ai_goal )
 	return accepted;
 }
 
-// remove an ai goal from it's list.  Uses the active_goal member as the goal to remove
+/**
+ * Remove an AI goal from its list. If this is also the present active_goal, remove it.
+ *
+ * Sets the ai_mode for the particular goal to AI_GOAL_NONE
+ * to reset AI mode to default behavior. Additionally, resets signature,
+ * priority and flags.
+ *
+ * @param aip ai_info of ship to reset goals of
+ * @param index Index into goals
+ */
 void ai_remove_ship_goal( ai_info *aip, int index )
 {
-	// only need to set the ai_mode for the particular goal to AI_GOAL_NONE
-	// reset ai mode to default behavior.  Might get changed next time through
-	// ai goal code look
-	Assert ( index >= 0 );			// must have a valid goal
+	// Must have a valid index into goals
+	Assert ( index >= 0 );
+	Assert ( index <  MAX_AI_GOALS );
 
 	aip->goals[index].ai_mode = AI_GOAL_NONE;
 	aip->goals[index].signature = -1;
@@ -237,10 +245,6 @@ void ai_remove_ship_goal( ai_info *aip, int index )
 
 	if ( index == aip->active_goal )
 		aip->active_goal = AI_GOAL_NONE;
-
-	// mwa -- removed this line 8/5/97.  Just because we remove a goal doesn't mean to do the default
-	// behavior.  We will make the call commented out below in a more reasonable location
-	//ai_do_default_behavior( &Objects[Ships[aip->shipnum].objnum] );
 }
 
 void ai_clear_ship_goals( ai_info *aip )
