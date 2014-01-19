@@ -238,10 +238,7 @@ void ai_remove_ship_goal( ai_info *aip, int index )
 	Assert ( index >= 0 );
 	Assert ( index <  MAX_AI_GOALS );
 
-	aip->goals[index].ai_mode = AI_GOAL_NONE;
-	aip->goals[index].signature = -1;
-	aip->goals[index].priority = -1;
-	aip->goals[index].flags = 0;				// must reset the flags since not doing so will screw up goal sorting.
+	CLEAR_AI_GOAL(aip->goals[index]);
 
 	if ( index == aip->active_goal )
 		aip->active_goal = AI_GOAL_NONE;
@@ -270,7 +267,6 @@ void ai_clear_wing_goals( int wingnum )
 {
 	int i;
 	wing *wingp = &Wings[wingnum];
-	//p_object *objp;
 
 	// clear the goals for all ships in the wing
 	for (i = 0; i < wingp->current_count; i++) {
@@ -278,18 +274,12 @@ void ai_clear_wing_goals( int wingnum )
 
 		if ( num > -1 )
 			ai_clear_ship_goals( &Ai_info[Ships[num].ai_index] );
-
 	}
 
-		// clear out the goals for the wing now
+	// clear out the goals for the wing now
 	for (i = 0; i < MAX_AI_GOALS; i++) {
-		wingp->ai_goals[i].ai_mode = AI_GOAL_NONE;
-		wingp->ai_goals[i].signature = -1;
-		wingp->ai_goals[i].priority = -1;
-		wingp->ai_goals[i].flags = 0;
+		CLEAR_AI_GOAL(wingp->ai_goals[i]);
 	}
-
-
 }
 
 // routine which marks a wing goal as being complete.  We get the wingnum and a pointer to the goal
@@ -343,14 +333,10 @@ void ai_mission_wing_goal_complete( int wingnum, ai_goal *remove_goalp )
 			continue;
 
 		if ( (aigp->ai_mode == mode) && (aigp->ai_submode == submode) && (aigp->priority == priority) && !stricmp(name, aigp->target_name) ) {
-			wingp->ai_goals[i].ai_mode = AI_GOAL_NONE;
-			wingp->ai_goals[i].signature = -1;
-			wingp->ai_goals[i].priority = -1;
-			wingp->ai_goals[i].flags = 0;
+			CLEAR_AI_GOAL(wingp->ai_goals[i]);
 			break;
 		}
 	}
-			
 }
 
 // routine which is called with an ai object complete it's goal.  Do some action
@@ -989,10 +975,7 @@ void ai_add_goal_sub_sexp( int sexp, int type, ai_goal *aigp, char *actor_name )
 	{
 		// based on ai_remove_ship_goal, these seem to be the only statements
 		// necessary to cause this goal to "never have been assigned"
-		aigp->ai_mode = AI_GOAL_NONE;
-		aigp->signature = -1;
-		aigp->priority = -1;
-		aigp->flags = 0;
+		CLEAR_AI_GOAL(*aigp);
 	}
 }
 
@@ -1149,12 +1132,8 @@ int ai_remove_goal_sexp_sub( int sexp, ai_goal* aigp )
 	if ( goalindex == -1 )
 		return -1; /* no more to do; */
 
-	/* Clear out the contents of the goal. We can't use ai_remove_ship_goal since it needs ai_info and
-	 * we've only got ai_goals */
-	aigp[goalindex].ai_mode = AI_GOAL_NONE;
-	aigp[goalindex].signature = -1;
-	aigp[goalindex].priority = -1;
-	aigp[goalindex].flags = 0;				// must reset the flags since not doing so will screw up goal sorting.
+	// Clear out the contents of the goal
+	CLEAR_AI_GOAL(aigp[goalindex]);
 
 	return goalindex;
 }
@@ -2341,7 +2320,7 @@ void ai_update_goal_references(ai_goal *goals, int type, const char *old_name, c
 		if (flag)  // is this a valid goal to parse for this conversion?
 			if (!stricmp(goals[i].target_name, old_name)) {
 				if (*new_name == '<')  // target was just deleted..
-					goals[i].ai_mode = AI_GOAL_NONE;
+					CLEAR_AI_GOAL(goals[i]);
 				else
 					goals[i].target_name = ai_get_goal_target_name(new_name, &dummy);
 			}

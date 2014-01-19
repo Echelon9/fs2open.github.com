@@ -78,6 +78,15 @@ struct ai_goal;
 
 #define MAX_AI_DOCK_NAMES				25
 
+// Clears an ai_goal structure of present goal
+#define CLEAR_AI_GOAL(ai_goal)              \
+do {                                        \
+    (ai_goal).ai_mode = AI_GOAL_NONE;		\
+    (ai_goal).signature = -1;				\
+    (ai_goal).priority = -1;				\
+    (ai_goal).flags = 0;					\
+} while (0)
+
 typedef flag_def_list ai_goal_list;
 
 extern ai_goal_list Ai_goal_names[];

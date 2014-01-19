@@ -4448,10 +4448,7 @@ void parse_wing(mission *pm)
 
 	// initialize wing goals
 	for (i=0; i<MAX_AI_GOALS; i++) {
-		wingp->ai_goals[i].ai_mode = AI_GOAL_NONE;
-		wingp->ai_goals[i].signature = -1;
-		wingp->ai_goals[i].priority = -1;
-		wingp->ai_goals[i].flags = 0;
+		CLEAR_AI_GOAL(wingp->ai_goals[i]);
 	}
 
 	// 7/13/98 -- MWA
