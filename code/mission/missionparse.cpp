@@ -1905,12 +1905,7 @@ int parse_create_object_sub(p_object *p_objp)
 
 	// must reset the number of ai goals when the object is created
 	for (i = 0; i < MAX_AI_GOALS; i++)
-	{
-		aip->goals[i].ai_mode = AI_GOAL_NONE;
-		aip->goals[i].signature = -1;
-		aip->goals[i].priority = -1;
-		aip->goals[i].flags = 0;
-	}
+		ai_remove_ship_goal( aip, i );
 
 	shipp->cargo1 = p_objp->cargo1;
 
