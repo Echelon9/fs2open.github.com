@@ -552,10 +552,6 @@ void psnet_init( int protocol, int port_num )
 	
 		// determine if our socket can broadcast
 		Can_broadcast = Tcp_can_broadcast;
-
-#ifdef CONFIG_MINIUPNPC
-		// psnet_SetupUPnP();
-#endif
 	
 		// initialize all packet type buffers
 		for(idx=0; idx<PSNET_NUM_TYPES; idx++){
