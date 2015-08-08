@@ -2716,25 +2716,9 @@ int model_load(char *filename, int n_subsystems, model_subsystem *subsystems, in
 int model_create_instance(int model_num, int submodel_num)
 {
 	int i = 0;
-	int open_slot = -1;
-
-	// go through model instances and find an empty slot
-	for ( i = 0; i < (int)Polygon_model_instances.size(); i++) {
-		if ( !Polygon_model_instances[i] ) {
-			open_slot = i;
-		}
-	}
 
 	polymodel_instance *pmi = (polymodel_instance*)vm_malloc(sizeof(polymodel_instance));
 	memset(pmi, 0, sizeof(polymodel_instance));
-
-	// if not found, create a slot
-	if ( open_slot < 0 ) {
-		Polygon_model_instances.push_back( pmi );
-		open_slot = Polygon_model_instances.size() - 1;
-	} else {
-		Polygon_model_instances[open_slot] = pmi;
-	}
 
 	polymodel *pm = model_get(model_num);
 
@@ -2746,7 +2730,9 @@ int model_create_instance(int model_num, int submodel_num)
 
 	pmi->model_num = model_num;
 
-	return open_slot;
+	Polygon_model_instances.push_back( pmi );
+
+	return (Polygon_model_instances.size() - 1);
 }
 
 void model_delete_instance(int model_instance_num)
