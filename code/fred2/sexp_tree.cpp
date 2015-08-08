@@ -5689,7 +5689,7 @@ sexp_list_item *sexp_tree::get_listing_opf_intel_name()
 	int i;
 	sexp_list_item head;
 
-	for (i=0; i<Intel_info_size; i++)
+	for (i=0; i<(int)Intel_info.size(); i++)
 		head.add_data(Intel_info[i].name);
 
 	return head.next;

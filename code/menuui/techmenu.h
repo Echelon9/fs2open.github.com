@@ -14,7 +14,6 @@
 
 #include "globalincs/globals.h"
 
-#define MAX_INTEL_ENTRIES		75
 #define TECH_INTEL_DESC_LEN		5120
 
 typedef struct {
@@ -31,9 +30,7 @@ typedef struct {
 
 extern int Techroom_overlay_id;
 
-extern intel_data Intel_info[MAX_INTEL_ENTRIES];
-extern int Intel_info_size;
-
+extern SCP_vector<intel_data> Intel_info;
 
 // function prototypes
 void techroom_init();

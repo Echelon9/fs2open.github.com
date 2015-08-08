@@ -234,8 +234,7 @@ static tech_list_entry *Ship_list = NULL;
 static int Ship_list_size = 0;
 static tech_list_entry *Weapon_list = NULL;
 static int Weapon_list_size = 0;
-static tech_list_entry Intel_list[MAX_INTEL_ENTRIES];
-static int Intel_list_size = 0;
+static SCP_vector<tech_list_entry> Intel_list;
 static tech_list_entry *Current_list;								// points to currently valid display list
 static int Current_list_size = 0;
 
@@ -243,8 +242,7 @@ static int Current_list_size = 0;
 static UI_SLIDER2 Tech_slider;
 
 // Intelligence master data structs (these get inited @ game startup from species.tbl)
-intel_data Intel_info[MAX_INTEL_ENTRIES];
-int Intel_info_size = 0;
+SCP_vector<intel_data> Intel_info;
 
 // some prototypes to make you happy
 int techroom_load_ani(anim **animpp, char *name);
@@ -288,7 +286,7 @@ void techroom_unload_animation()
 		}
 	}
 
-	for (i = 0; i < Intel_list_size; i++) {
+	for (i = 0; i < (int)Intel_list.size(); i++) {
 		if (Intel_list[i].animation.num_frames != 0) {
 			generic_anim_unload(&Intel_list[i].animation);
 		}
@@ -889,33 +887,35 @@ void techroom_change_tab(int num)
 			// load intel if necessary
 			if ( Intel_loaded == 0 ) {
 				// now populate the entry structs
-				Intel_list_size = 0;
 
-				for (i=0; i<Intel_info_size; i++) {
+				for (i = 0; i < (int)Intel_info.size(); i++) {
 					if (Techroom_show_all || (Intel_info[i].flags & IIF_IN_TECH_DATABASE) || (Intel_info[i].flags & IIF_DEFAULT_IN_TECH_DATABASE)) {
+						tech_list_entry	new_tech_list_entry;
+
 						// leave option for no animation if string == "none"
 						if (!strcmp(Intel_info[i].anim_filename, "none")) {
-							Intel_list[Intel_list_size].has_anim = 0;
-							Intel_list[Intel_list_size].animation.num_frames = 0;
+							new_tech_list_entry.has_anim = 0;
+							new_tech_list_entry.animation.num_frames = 0;
 						} else {
 							// try and load as an animation
-							Intel_list[Intel_list_size].has_anim = 0;
-							Intel_list[Intel_list_size].bitmap = -1;
-							strncpy(Intel_list[Intel_list_size].tech_anim_filename, Intel_info[i].anim_filename, NAME_LENGTH - 1);
+							new_tech_list_entry.has_anim = 0;
+							new_tech_list_entry.bitmap = -1;
+							strncpy(new_tech_list_entry.tech_anim_filename, Intel_info[i].anim_filename, NAME_LENGTH - 1);
 						}
 
-						Intel_list[Intel_list_size].desc = Intel_info[i].desc;
-						Intel_list[Intel_list_size].index = i;
-						Intel_list[Intel_list_size].name = Intel_info[i].name;
-						Intel_list[Intel_list_size].model_num = -1;
-						Intel_list[Intel_list_size].textures_loaded = 0;
+						new_tech_list_entry.desc = Intel_info[i].desc;
+						new_tech_list_entry.index = i;
+						new_tech_list_entry.name = Intel_info[i].name;
+						new_tech_list_entry.model_num = -1;
+						new_tech_list_entry.textures_loaded = 0;
 
-						Intel_list_size++;
+						Intel_list.push_back(new_tech_list_entry);
 					}
 				}
 
 				// make sure that at least the default entry is cleared out if we didn't grab anything
-				if (Intel_info_size && !Intel_list_size) {
+				// Echelon9: This may well be redundant now that Intel_list uses SCP_vector<>
+				if ((int)Intel_info.size() && !(int)Intel_list.size()) {
 					Intel_list[0].index = -1;
 					Intel_list[0].desc = NULL;
 					Intel_list[0].name = NULL;
@@ -932,7 +932,7 @@ void techroom_change_tab(int num)
 			// index lookup on intel is a pretty pointless, but it keeps everything 
 			// consistent and doesn't really hurt anything
 			Current_list = Intel_list;
-			Current_list_size = Intel_list_size;
+			Current_list_size = (int)Intel_list.size();
 
 			font_height = gr_get_font_height();
 			max_num_entries_viewable = Tech_list_coords[gr_screen.res][SHIP_H_COORD] / font_height;
@@ -1060,34 +1060,29 @@ void techroom_intel_init()
 		read_file_text("species.tbl", CF_TYPE_TABLES);
 		reset_parse();
 
-		Intel_info_size = 0;
 		while (optional_string("$Entry:")) {
-			Assert(Intel_info_size < MAX_INTEL_ENTRIES);
-			if (Intel_info_size >= MAX_INTEL_ENTRIES) {
-				mprintf(("TECHMENU: Too many intel entries!\n"));
-				break;
-			}
+			intel_data new_intel_data;
 
-			Intel_info[Intel_info_size].flags = IIF_DEFAULT_VALUE;
+			new_intel_data.flags = IIF_DEFAULT_VALUE;
 
 			required_string("$Name:");
-			stuff_string(Intel_info[Intel_info_size].name, F_NAME, NAME_LENGTH);
+			stuff_string(new_intel_data.name, F_NAME, NAME_LENGTH);
 
 			required_string("$Anim:");
-			stuff_string(Intel_info[Intel_info_size].anim_filename, F_NAME, NAME_LENGTH);
+			stuff_string(new_intel_data.anim_filename, F_NAME, NAME_LENGTH);
 
 			required_string("$AlwaysInTechRoom:");
 			stuff_int(&temp);
 			if (temp) {
 				// set default to align with what we read - Goober5000
-				Intel_info[Intel_info_size].flags |= IIF_IN_TECH_DATABASE;
-				Intel_info[Intel_info_size].flags |= IIF_DEFAULT_IN_TECH_DATABASE;
+				new_intel_data.flags |= IIF_IN_TECH_DATABASE;
+				new_intel_data.flags |= IIF_DEFAULT_IN_TECH_DATABASE;
 			}
 
 			required_string("$Description:");
-			stuff_string(Intel_info[Intel_info_size].desc, F_MULTITEXT, TECH_INTEL_DESC_LEN);
+			stuff_string(new_intel_data.desc, F_MULTITEXT, TECH_INTEL_DESC_LEN);
 
-			Intel_info_size++;
+			Intel_info.push_back(new_intel_data);
 		}
 
 		inited = 1;
@@ -1183,7 +1178,7 @@ void techroom_init()
 	Tech_slider.create(&Ui_window, Tech_slider_coords[gr_screen.res][SHIP_X_COORD], Tech_slider_coords[gr_screen.res][SHIP_Y_COORD], Tech_slider_coords[gr_screen.res][SHIP_W_COORD], Tech_slider_coords[gr_screen.res][SHIP_H_COORD], Num_ship_classes, Tech_slider_filename[gr_screen.res], &tech_scroll_list_up, &tech_scroll_list_down, &tech_ship_scroll_capture);
 
 	// zero intel anim/bitmap stuff
-	for(idx=0; idx<MAX_INTEL_ENTRIES; idx++){
+	for(idx = 0; idx < (int)Intel_list.size(); idx++){
 		Intel_list[idx].animation.num_frames = 0;
 		Intel_list[idx].bitmap = -1;
 	}
@@ -1232,7 +1227,7 @@ void techroom_lists_reset()
 	Weapon_list_size = 0;
 	Weapons_loaded = 0;
 
-	for (i = 0; i < Intel_list_size; i++) {
+	for (i = 0; i < (int)Intel_list.size(); i++) {
 		if (Intel_list[i].animation.num_frames != 0) {
 			generic_anim_unload(&Intel_list[i].animation);
 		}
@@ -1243,7 +1238,6 @@ void techroom_lists_reset()
 		}
 	}
 
-	Intel_list_size = 0;
 	Intel_loaded = 0;
 }
 
@@ -1427,7 +1421,7 @@ int intel_info_lookup(char *name)
 	if (!name)
 		return -1;
 
-	for (i=0; i<Intel_info_size; i++)
+	for (i = 0; i < (int)Intel_info.size(); i++)
 		if (!stricmp(name, Intel_info[i].name))
 			return i;
 
@@ -1463,7 +1457,7 @@ void tech_reset_to_default()
 	}
 
 	// intelligence
-	for (i=0; i<Intel_info_size; i++)
+	for (i = 0; i < (int)Intel_info.size(); i++)
 	{
 		if (Intel_info[i].flags & IIF_DEFAULT_IN_TECH_DATABASE)
 			Intel_info[i].flags |= IIF_IN_TECH_DATABASE;

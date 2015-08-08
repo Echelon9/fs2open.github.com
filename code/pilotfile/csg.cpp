@@ -90,7 +90,7 @@ void pilotfile::csg_read_info()
 		weapon_list.push_back(ilist);
 	}
 
-	// intel list (NOTE: may contain more than MAX_INTEL_ENTRIES)
+	// intel list
 	list_size = cfread_int(cfp);
 
 	for (idx = 0; idx < list_size; idx++) {
@@ -198,9 +198,9 @@ void pilotfile::csg_write_info()
 	}
 
 	// intel list
-	cfwrite_int(Intel_info_size, cfp);
+	cfwrite_int((int)Intel_info.size(), cfp);
 
-	for (idx = 0; idx < Intel_info_size; idx++) {
+	for (idx = 0; idx < (int)Intel_info.size(); idx++) {
 		cfwrite_string_len(Intel_info[idx].name, cfp);
 	}
 
@@ -505,7 +505,7 @@ void pilotfile::csg_write_techroom()
 	}
 
 	// visible intel entries
-	for (idx = 0; idx < Intel_info_size; idx++) {
+	for (idx = 0; idx < (int)Intel_info.size(); idx++) {
 		// only visible if not in techroom by default
 		if ( (Intel_info[idx].flags & IIF_IN_TECH_DATABASE) && !(Intel_info[idx].flags & IIF_DEFAULT_IN_TECH_DATABASE) ) {
 			visible = 1;
