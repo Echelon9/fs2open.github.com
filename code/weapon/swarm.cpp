@@ -44,11 +44,9 @@ turret_swarm_info Turret_swarm_info[MAX_TURRET_SWARM_INFO];
 
 int Turret_swarm_validity_next_check_time;
 
-// ------------------------------------------------------------------
-// swarm_level_init()
-//
-// Called at the start of each new mission
-//
+/**
+ *  Called at the start of each new mission
+ */
 void swarm_level_init()
 {
 	int					i;
@@ -74,6 +72,7 @@ void swarm_level_init()
 		tswarmp->turret		  = NULL;
 		tswarmp->target_subsys = NULL;
 		tswarmp->time_to_fire  = 0;
+		tswarmp->weapon_num = -1;
 	}
 
 	Turret_swarm_validity_next_check_time = timestamp(TURRET_SWARM_VALIDITY_CHECKTIME);
@@ -366,11 +365,9 @@ void swarm_update_direction(object *objp, float frametime)
 	vm_vec_copy_scale(&objp->phys_info.desired_vel, &objp->orient.vec.fvec, vel);
 }
 
-// ------------------------------------------------------------------
-// turret_swarm_create()
-//
-//	Get a free swarm missile entry, and initialize the struct members
-//
+/**
+ * Get a free swarm missile entry, and initialize the struct members
+ */
 int turret_swarm_create()
 {
 	int i;
@@ -397,6 +394,7 @@ int turret_swarm_create()
 	tswarmp->turret = NULL;
 	tswarmp->target_subsys = NULL;
 	tswarmp->time_to_fire = 0;
+	tswarmp->weapon_num = -1;
 
 	tswarmp->flags |= SWARM_USED;
 	return i;
