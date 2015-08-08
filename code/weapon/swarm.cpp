@@ -45,13 +45,30 @@ turret_swarm_info Turret_swarm_info[MAX_TURRET_SWARM_INFO];
 int Turret_swarm_validity_next_check_time;
 
 /**
+ * Helper function to consistently initialise ::turret_swarm_info
+ */
+void turret_swarm_clean_setup(turret_swarm_info *tsi)
+{
+	tsi->flags 		= 0;
+	tsi->weapon_class 	= -1;
+	tsi->num_to_launch 	= 0;
+	tsi->parent_objnum 	= -1;
+	tsi->parent_sig		= -1;
+	tsi->target_objnum 	= -1;
+	tsi->target_sig		= -1;
+	tsi->turret		= NULL;
+	tsi->target_subsys 	= NULL;
+	tsi->time_to_fire  	= 0;
+	tsi->weapon_num 	= -1;
+}
+
+/**
  *  Called at the start of each new mission
  */
 void swarm_level_init()
 {
 	int					i;
 	swarm_info			*swarmp;
-	turret_swarm_info	*tswarmp;
 
 	for ( i = 0; i < MAX_SWARM_MISSILES; i++ ) {
 		swarmp = &Swarm_missiles[i];
@@ -61,18 +78,7 @@ void swarm_level_init()
 	}
 
 	for (i=0; i<MAX_TURRET_SWARM_INFO; i++) {
-		tswarmp = &Turret_swarm_info[i];
-		tswarmp->flags = 0;
-		tswarmp->weapon_class = -1;
-		tswarmp->num_to_launch = 0;
-		tswarmp->parent_objnum = -1;
-		tswarmp->parent_sig	  = -1;
-		tswarmp->target_objnum = -1;
-		tswarmp->target_sig	  = -1;
-		tswarmp->turret		  = NULL;
-		tswarmp->target_subsys = NULL;
-		tswarmp->time_to_fire  = 0;
-		tswarmp->weapon_num = -1;
+		turret_swarm_clean_setup(&Turret_swarm_info[i]);
 	}
 
 	Turret_swarm_validity_next_check_time = timestamp(TURRET_SWARM_VALIDITY_CHECKTIME);
@@ -384,19 +390,9 @@ int turret_swarm_create()
 		return -1;
 	}
 
-	tswarmp->flags = 0;
-	tswarmp->weapon_class = -1;
-	tswarmp->num_to_launch = 0;
-	tswarmp->parent_objnum = -1;
-	tswarmp->parent_sig = -1;
-	tswarmp->target_objnum = -1;
-	tswarmp->target_sig = -1;
-	tswarmp->turret = NULL;
-	tswarmp->target_subsys = NULL;
-	tswarmp->time_to_fire = 0;
-	tswarmp->weapon_num = -1;
-
+	turret_swarm_clean_setup(tswarmp);
 	tswarmp->flags |= SWARM_USED;
+
 	return i;
 }
 
@@ -655,3 +651,4 @@ void turret_swarm_check_validity()
 		}
 	}
 }
+
