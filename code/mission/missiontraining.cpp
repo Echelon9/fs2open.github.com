@@ -872,7 +872,7 @@ void message_training_queue(char *text, int timestamp, int length)
 /**
  * Removes current message from the queue
  */
-void message_training_remove_from_queue(int idx)
+void message_training_remove_from_queue(size_t idx)
 {
 	// Free the special message entry
 	if (Training_Message_Queue[idx].special_message != NULL)
@@ -889,7 +889,8 @@ void message_training_remove_from_queue(int idx)
  */
 void message_training_queue_check()
 {
-	int i, iship_num;
+	int iship_num;
+	size_t i;
 
 	// get the instructor's ship.
 	iship_num = ship_name_lookup(NOX("instructor"));
@@ -902,7 +903,7 @@ void message_training_queue_check()
 	if (Training_failure)
 		return;
 
-	for (i = 0; i < (int)Training_Message_Queue.size(); i++) {
+	for (i = 0; i < Training_Message_Queue.size(); i++) {
 		if (timestamp_elapsed(Training_Message_Queue[i].timestamp)) {
 			message_training_setup(Training_Message_Queue[i].num, Training_Message_Queue[i].length, Training_Message_Queue[i].special_message);
 
