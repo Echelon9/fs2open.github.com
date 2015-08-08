@@ -232,8 +232,7 @@ typedef struct {
 
 static tech_list_entry *Ship_list = NULL;
 static int Ship_list_size = 0;
-static tech_list_entry *Weapon_list = NULL;
-static int Weapon_list_size = 0;
+static SCP_vector<tech_list_entry> Weapon_list;
 static tech_list_entry Intel_list[MAX_INTEL_ENTRIES];
 static int Intel_list_size = 0;
 static tech_list_entry *Current_list;								// points to currently valid display list
@@ -275,16 +274,14 @@ void techroom_unload_animation()
 	int i;
 
 	//clear everything, just in case, it will get loaded when needed later
-	if (Weapon_list != NULL) {
-		for (i = 0; i < Weapon_list_size; i++) {
-			if (Weapon_list[i].animation.num_frames != 0) {
-				generic_anim_unload(&Weapon_list[i].animation);
-			}
+	for (i = 0; i < (int)Weapon_list.size(); i++) {
+		if (Weapon_list[i].animation.num_frames != 0) {
+			generic_anim_unload(&Weapon_list[i].animation);
+		}
 
-			if (Weapon_list[i].bitmap >= 0) {
-				bm_release(Weapon_list[i].bitmap);
-				Weapon_list[i].bitmap = -1;
-			}
+		if (Weapon_list[i].bitmap >= 0) {
+			bm_release(Weapon_list[i].bitmap);
+			Weapon_list[i].bitmap = -1;
 		}
 	}
 
@@ -829,14 +826,6 @@ void techroom_change_tab(int num)
 				
 			// load weapon info & anims if necessary
 			if ( Weapons_loaded == 0 ) {
-				if (Weapon_list == NULL) {
-					Weapon_list = new tech_list_entry[Num_weapon_types];
-
-					if (Weapon_list == NULL)
-						Error(LOCATION, "Couldn't init ships list!");
-				}
-
-				Weapon_list_size = 0;
 				mask = multi ? WIF_PLAYER_ALLOWED : WIF_IN_TECH_DATABASE;
 				mask2 = WIF2_DEFAULT_IN_TECH_DATABASE;
 
@@ -845,23 +834,25 @@ void techroom_change_tab(int num)
 					if (Techroom_show_all || (Weapon_info[i].wi_flags & mask) || (Weapon_info[i].wi_flags2 & mask2))
 					{ 
 						// we have a weapon that should be in the tech db, so fill out the entry struct
-						Weapon_list[Weapon_list_size].index = i;
-						Weapon_list[Weapon_list_size].desc = Weapon_info[i].tech_desc;
-						Weapon_list[Weapon_list_size].has_anim = 1;
-						Weapon_list[Weapon_list_size].name = *Weapon_info[i].tech_title ? Weapon_info[i].tech_title : Weapon_info[i].name;
-						Weapon_list[Weapon_list_size].bitmap = -1;
-						Weapon_list[Weapon_list_size].animation.num_frames = 0;
-						Weapon_list[Weapon_list_size].model_num = -1;
-						Weapon_list[Weapon_list_size].textures_loaded = 0;
+						tech_list_entry weapon_list_entry;
+						weapon_list_entry.index = i;
+						weapon_list_entry.desc = Weapon_info[i].tech_desc;
+						weapon_list_entry.has_anim = 1;
+						weapon_list_entry.name = *Weapon_info[i].tech_title ? Weapon_info[i].tech_title : Weapon_info[i].name;
+						weapon_list_entry.bitmap = -1;
+						weapon_list_entry.animation.num_frames = 0;
+						weapon_list_entry.model_num = -1;
+						weapon_list_entry.textures_loaded = 0;
 						// copy the weapon animation filename
-						strncpy(Weapon_list[Weapon_list_size].tech_anim_filename, Weapon_info[i].tech_anim_filename, MAX_FILENAME_LEN - 1);
+						strncpy(weapon_list_entry.tech_anim_filename, Weapon_info[i].tech_anim_filename, MAX_FILENAME_LEN - 1);
 
-						Weapon_list_size++;
+						Weapon_list.push_back(weapon_list_entry);
 					}				
 				}
 
 				// make sure that at least the default entry is cleared out if we didn't grab anything
-				if (Num_weapon_types && !Weapon_list_size) {
+				// This may be redundant now that Weapon_list uses SCP_vector<>
+				if (Num_weapon_types && !(int)Weapon_list.size()) {
 					Weapon_list[0].index = -1;
 					Weapon_list[0].desc = NULL;
 					Weapon_list[0].name = NULL;
@@ -876,7 +867,7 @@ void techroom_change_tab(int num)
 			}
 
 			Current_list = Weapon_list;
-			Current_list_size = Weapon_list_size;
+			Current_list_size = (int)Weapon_list.size();
 
 			font_height = gr_get_font_height();
 			max_num_entries_viewable = Tech_list_coords[gr_screen.res][SHIP_H_COORD] / font_height;
@@ -1213,23 +1204,17 @@ void techroom_lists_reset()
 	Ship_list_size = 0;
 	Ships_loaded = 0;
 
-	if (Weapon_list != NULL) {
-		for (i = 0; i < Weapon_list_size; i++) {
-			if (Weapon_list[i].animation.num_frames != 0) {
-				generic_anim_unload(&Weapon_list[i].animation);
-			}
-
-			if (Weapon_list[i].bitmap >= 0) {
-				bm_release(Weapon_list[i].bitmap);
-				Weapon_list[i].bitmap = -1;
-			}
+	for (i = 0; i < (int)Weapon_list.size(); i++) {
+		if (Weapon_list[i].animation.num_frames != 0) {
+			generic_anim_unload(&Weapon_list[i].animation);
 		}
 
-		delete[] Weapon_list;
-		Weapon_list = NULL;
+		if (Weapon_list[i].bitmap >= 0) {
+			bm_release(Weapon_list[i].bitmap);
+			Weapon_list[i].bitmap = -1;
+		}
 	}
 
-	Weapon_list_size = 0;
 	Weapons_loaded = 0;
 
 	for (i = 0; i < Intel_list_size; i++) {
