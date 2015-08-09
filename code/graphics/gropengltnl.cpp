@@ -145,7 +145,6 @@ void opengl_vertex_buffer::clear()
 static SCP_vector<opengl_buffer_object> GL_buffer_objects;
 static SCP_vector<opengl_vertex_buffer> GL_vertex_buffers;
 static opengl_vertex_buffer *g_vbp = NULL;
-static int GL_vertex_buffers_in_use = 0;
 
 int opengl_create_buffer_object(GLenum type, GLenum usage)
 {
@@ -355,7 +354,6 @@ int gr_opengl_create_buffer()
 	opengl_vertex_buffer vbuffer;
 
 	GL_vertex_buffers.push_back( vbuffer );
-	GL_vertex_buffers_in_use++;
 
 	return (int)(GL_vertex_buffers.size() - 1);
 }
@@ -597,14 +595,6 @@ void gr_opengl_destroy_buffer(int idx)
 
 	vbp->clear();
 
-	// we try to take advantage of the fact that there shouldn't be a lot of buffer
-	// deletions/additions going on all of the time, so a model_unload_all() and/or
-	// game_level_close() should pretty much keep everything cleared out on a
-	// regular basis
-	if (--GL_vertex_buffers_in_use <= 0) {
-		GL_vertex_buffers.clear();
-	}
-
 	g_vbp = NULL;
 }
 
@@ -619,7 +609,6 @@ void opengl_destroy_all_buffers()
 	}
 
 	GL_vertex_buffers.clear();
-	GL_vertex_buffers_in_use = 0;
 }
 
 void opengl_tnl_init()
