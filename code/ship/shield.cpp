@@ -500,7 +500,7 @@ void create_tris_containing(vec3d *vp, matrix *orient, shield_info *shieldp, vec
 				vec3d v;
 
 				v = verts[shieldp->tris[i].verts[j]].pos;
-				if ((vp->xyz.x == v.xyz.x) && (vp->xyz.y == v.xyz.y) && (vp->xyz.z == v.xyz.z))
+				if (vp == &v)
 					create_shield_from_triangle(i, orient, shieldp, tcp, centerp, radius, rvec, uvec);
 			}
 		}

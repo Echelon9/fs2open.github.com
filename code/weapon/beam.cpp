@@ -1166,7 +1166,7 @@ void beam_render(beam *b, float u_offset)
 		return;
 
 	// if the beam start and endpoints are the same
-	if ( vm_vec_same(&b->last_start, &b->last_shot) )
+	if (&b->last_start == &b->last_shot)
 		return;
 
 	// get beam direction
@@ -2295,7 +2295,7 @@ void beam_get_octant_points(int modelnum, object *objp, int oct_index, int oct_a
 	// randomly pick octants	
 	t1 = oct_array[oct_index][2] ? m->octants[oct_array[oct_index][0]].max : m->octants[oct_array[oct_index][0]].min;
 	t2 = oct_array[oct_index][3] ? m->octants[oct_array[oct_index][1]].max : m->octants[oct_array[oct_index][1]].min;
-	Assert(!vm_vec_same(&t1, &t2));
+	Assert(!(&t1 == &t2));
 
 	// get them in world coords
 	vm_vec_unrotate(&temp, &t1, &objp->orient);

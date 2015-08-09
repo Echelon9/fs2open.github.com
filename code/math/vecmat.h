@@ -356,9 +356,6 @@ float vm_delta_from_interp_angle( float current_angle, float desired_angle );
 // check a matrix for zero rows and columns
 int vm_check_matrix_for_zeros(const matrix *m);
 
-// see if two vectors are identical
-int vm_vec_same(const vec3d *v1, const vec3d *v2);
-
 // see if two matrices are identical
 int vm_matrix_same(matrix *m1, matrix *m2);
 

@@ -1522,15 +1522,6 @@ int vm_check_matrix_for_zeros(const matrix *m)
 	return 0;
 }
 
-// see if two vectors are the same
-int vm_vec_same(const vec3d *v1, const vec3d *v2)
-{
-	if ( v1->xyz.x == v2->xyz.x && v1->xyz.y == v2->xyz.y && v1->xyz.z == v2->xyz.z )
-		return 1;
-
-	return 0;
-}
-
 // see if two matrices are the same
 int vm_matrix_same(matrix *m1, matrix *m2)
 {
@@ -1990,7 +1981,7 @@ void vm_matrix_interpolate(const matrix *goal_orient, const matrix *curr_orient,
 	theta = vm_vec_normalize(&rot_axis);
 
 	// arrived at goal?
-	if (theta_end.xyz.x == theta_goal.xyz.x && theta_end.xyz.y == theta_goal.xyz.y && theta_end.xyz.z == theta_goal.xyz.z) {
+	if (theta_end == theta_goal) {
 		*next_orient = *goal_orient;
 	} else {
 	// otherwise rotate to better position
@@ -2509,7 +2500,7 @@ int vm_vec_dist_to_line(const vec3d *p, const vec3d *l0, const vec3d *l1, vec3d 
 	float b_mag, comp;
 
 #ifndef NDEBUG
-	if(vm_vec_same(l0, l1)){
+	if(l0 == l1){
 		*nearest = vmd_zero_vector;
 		return -1;
 	}
@@ -2549,7 +2540,7 @@ void vm_vec_dist_squared_to_line(const vec3d *p, const vec3d *l0, const vec3d *l
 	float b_mag, comp;
 
 #ifndef NDEBUG
-	if(vm_vec_same(l0, l1)){
+	if(l0 == l1){
 		*nearest = vmd_zero_vector;
 		return;
 	}

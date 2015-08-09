@@ -6651,13 +6651,13 @@ void weapon_maybe_spew_particle(object *obj)
 				wp->particle_spew_time[psi] = timestamp(wip->particle_spewers[0].particle_spew_time);
 
 				// turn normals and origins to world space if we need to
-				if (!vm_vec_same(&wip->particle_spewers[psi].particle_spew_offset, &vmd_zero_vector)) {	// don't xform unused vectors
+				if (!(&wip->particle_spewers[psi].particle_spew_offset == &vmd_zero_vector)) {	// don't xform unused vectors
 					vm_vec_unrotate(&spawn_pos, &wip->particle_spewers[psi].particle_spew_offset, &obj->orient);
 				} else {
 					spawn_pos = vmd_zero_vector;
 				}
 
-				if (!vm_vec_same(&wip->particle_spewers[psi].particle_spew_velocity, &vmd_zero_vector)) {
+				if (!(&wip->particle_spewers[psi].particle_spew_velocity == &vmd_zero_vector)) {
 					vm_vec_unrotate(&spawn_vel, &wip->particle_spewers[psi].particle_spew_velocity, &obj->orient);
 				} else {
 					spawn_vel = vmd_zero_vector;
@@ -6701,10 +6701,10 @@ void weapon_maybe_spew_particle(object *obj)
 						vm_vec_scale(&vel, wip->particle_spewers[psi].particle_spew_vel);
 
 						// maybe add in offset and initial velocity
-						if (!vm_vec_same(&spawn_vel, &vmd_zero_vector)) { // add in particle velocity if its available
+						if (!(&spawn_vel == &vmd_zero_vector)) { // add in particle velocity if its available
 							vm_vec_add2(&vel, &spawn_vel);
 						}
-						if (!vm_vec_same(&spawn_pos, &vmd_zero_vector)) { // add offset if available
+						if (!(&spawn_pos == &vmd_zero_vector)) { // add offset if available
 							vm_vec_add2(&direct, &spawn_pos);
 						}
 
@@ -6742,10 +6742,10 @@ void weapon_maybe_spew_particle(object *obj)
 						vm_vec_sub(&output_pos, &obj->pos, &input_pos);						// translate to world space
 
 						//maybe add in offset and initial velocity
-						if (!vm_vec_same(&spawn_vel, &vmd_zero_vector)) { // add particle velocity if needed
+						if (!(&spawn_vel == &vmd_zero_vector)) { // add particle velocity if needed
 							vm_vec_add2(&output_vel, &spawn_vel);
 						}
-						if (!vm_vec_same(&spawn_pos, &vmd_zero_vector)) { // add offset if needed
+						if (!(&spawn_pos == &vmd_zero_vector)) { // add offset if needed
 							vm_vec_add2(&output_pos, &spawn_pos);
 						}
 
@@ -6776,10 +6776,10 @@ void weapon_maybe_spew_particle(object *obj)
 						output_pos = obj->pos;
 
 						// maybe add in offset and initial velocity
-						if (!vm_vec_same(&spawn_vel, &vmd_zero_vector)) { // add particle velocity if needed
+						if (!(&spawn_vel == &vmd_zero_vector)) { // add particle velocity if needed
 							vm_vec_add2(&output_vel, &spawn_vel);
 						}
-						if (!vm_vec_same(&spawn_pos, &vmd_zero_vector)) { // add offset if needed
+						if (!(&spawn_pos == &vmd_zero_vector)) { // add offset if needed
 							vm_vec_add2(&output_pos, &spawn_pos);
 						}
 
@@ -6802,10 +6802,10 @@ void weapon_maybe_spew_particle(object *obj)
 						output_pos = obj->pos;
 
 						// maybe add in offset amd iitial velocity
-						if (!vm_vec_same(&spawn_vel, &vmd_zero_vector)) { // add particle velocity if needed
+						if (!(&spawn_vel == &vmd_zero_vector)) { // add particle velocity if needed
 							vm_vec_add2(&output_vel, &spawn_vel);
 						}
-						if (!vm_vec_same(&spawn_pos, &vmd_zero_vector)) { // add offset if needed
+						if (!(&spawn_pos == &vmd_zero_vector)) { // add offset if needed
 							vm_vec_add2(&output_pos, &spawn_pos);
 						}
 
@@ -6838,10 +6838,10 @@ void weapon_maybe_spew_particle(object *obj)
 						vm_vec_sub(&output_pos, &obj->pos, &input_pos); // translate to world
 						
 						// maybe add in offset amd iitial velocity
-						if (!vm_vec_same(&spawn_vel, &vmd_zero_vector)) { // add particle velocity if needed
+						if (!(&spawn_vel == &vmd_zero_vector)) { // add particle velocity if needed
 							vm_vec_add2(&output_vel, &spawn_vel);
 						}
-						if (!vm_vec_same(&spawn_pos, &vmd_zero_vector)) { // add offset if needed
+						if (!(&spawn_pos == &vmd_zero_vector)) { // add offset if needed
 							vm_vec_add2(&output_pos, &spawn_pos);
 						}
 

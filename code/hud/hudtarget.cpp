@@ -1204,7 +1204,7 @@ void hud_target_common(int team_mask, int next_flag)
 				continue;
 		}
 
-		if ( vm_vec_same(&A->pos, &Eye_position) )
+		if (&A->pos == &Eye_position)
 			continue;
 
 		if ( is_ship ) {
@@ -2641,7 +2641,7 @@ void hud_target_in_reticle_old()
 			continue;
 		}
 
-		if ( vm_vec_same( &A->pos, &Eye_position ) ) {
+		if (&A->pos == &Eye_position) {
 			continue;
 		}
 

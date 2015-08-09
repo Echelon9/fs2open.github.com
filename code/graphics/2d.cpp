@@ -1382,7 +1382,7 @@ void gr_pline_helper(vec3d *out, vec3d *in1, vec3d *in2, int thickness)
 	vec3d slope;
 
 	// slope of the line
-	if(vm_vec_same(in1, in2)) {
+	if(in1==in2) {
 		slope = vmd_zero_vector;
 	} else {
 		vm_vec_sub(&slope, in2, in1);

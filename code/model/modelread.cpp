@@ -1857,7 +1857,7 @@ int read_model_file(polymodel * pm, char *filename, int n_subsystems, model_subs
 							}
 						}
 
-						if(vm_vec_same(&bay->pnt[0], &bay->pnt[1])) {
+						if(&bay->pnt[0] == &bay->pnt[1]) {
 							Warning(LOCATION, "Model '%s' has two identical docking slot positions on docking port '%s'. This is not allowed.  A new second slot position will be generated.", filename, bay->name);
 
 							// just move the second point over by some amount

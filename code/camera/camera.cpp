@@ -231,7 +231,7 @@ void camera::set_rotation_facing(vec3d *in_target, float in_rotation_time, float
 		vec3d position = vmd_zero_vector;
 		this->get_info(&position, NULL);
 
-		if(in_target->xyz.x == position.xyz.x && in_target->xyz.y == position.xyz.y && in_target->xyz.z == position.xyz.z)
+		if(in_target == &position)
 		{
 			Warning(LOCATION, "Camera tried to point to self");
 			return;
@@ -397,7 +397,7 @@ void camera::get_info(vec3d *position, matrix *orientation)
 			{
 				if(eyep)
 				{
-					vm_vector_2_matrix(&c_ori, &host_normal, vm_vec_same(&host_normal, &object_host.objp->orient.vec.uvec)?NULL:&object_host.objp->orient.vec.uvec, NULL);
+					vm_vector_2_matrix(&c_ori, &host_normal, (&host_normal == &object_host.objp->orient.vec.uvec)?NULL:&object_host.objp->orient.vec.uvec, NULL);
 					target_set = true;
 				}
 				else
@@ -1063,7 +1063,7 @@ void get_turret_cam_orient(camera *cam, matrix *ori)
 	object_h obj(cam->get_object_host());
 	if(!obj.IsValid())
 		return;
-	vm_vector_2_matrix(ori, &normal_cache, vm_vec_same(&normal_cache, &cam->get_object_host()->orient.vec.uvec)?NULL:&cam->get_object_host()->orient.vec.uvec, NULL);
+	vm_vector_2_matrix(ori, &normal_cache, (&normal_cache == &cam->get_object_host()->orient.vec.uvec)?NULL:&cam->get_object_host()->orient.vec.uvec, NULL);
 }
 
 eye* get_submodel_eye(polymodel *pm, int submodel_num)

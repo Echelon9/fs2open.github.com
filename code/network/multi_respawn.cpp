@@ -941,7 +941,7 @@ void prevent_spawning_collision(object *new_obj)
 			s_check = &Ships[hit_check->instance];
 							
 			// just to make sure we don't get any strange magnitude errors
-			if (vm_vec_same(&hit_check->pos, &new_obj->pos))
+			if (&hit_check->pos == &new_obj->pos)
 				new_obj->pos.xyz.x += 1.0f;
 							
 			polymodel *pm = model_get(Ship_info[s_check->ship_info_index].model_num);

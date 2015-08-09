@@ -612,7 +612,7 @@ void nebl_bolt(size_t type, vec3d *start, vec3d *strike)
 	}
 
 	// setup the rest of the important bolt data
-	if(vm_vec_same(&Nebl_bolt_start, &Nebl_bolt_strike)){
+	if(&Nebl_bolt_start == &Nebl_bolt_strike){
 		Nebl_bolt_strike.xyz.z += 150.0f;
 	}
 	Nebl_bolt_len = vm_vec_dist(&Nebl_bolt_start, &Nebl_bolt_strike);	
