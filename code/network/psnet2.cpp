@@ -561,9 +561,9 @@ void psnet_init( int protocol, int port_num )
 }
 
 #ifdef CONFIG_MINIUPNPC
-#include "miniupnpc.h"
-#include "upnpcommands.h"
-#include "upnperrors.h"
+#include <miniupnpc/miniupnpc.h>
+#include <miniupnpc/upnpcommands.h>
+#include <miniupnpc/upnperrors.h>
 
 char g_psPort[6];
 const char* g_leaseDuration = "0"; // Indefinite/permanent lease duration.
